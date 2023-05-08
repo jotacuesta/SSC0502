@@ -1,0 +1,7 @@
+.vscode
+DATABASE.bin
+UAIBANK.txt
+
+build/
+config/
+export/
