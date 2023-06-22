@@ -196,11 +196,24 @@ int main()
 		fclose(db);
 	}
 
+	int id_solicitante = 0;
+	int id_beneficiario = 0;
+	float quantidade = 0.0;
+
+	int isInputOK = 0;
+
 	int opcao = 0;
+	int subOpcao = 0;
+
 	int id = 0;
+
 	int i = 0;
 	int n = 0;
+
 	Usuario u;
+
+	char feedback[100];
+	int index = 0;
 
 	// Imprime o menu do opções para o usuário
 	do
@@ -223,13 +236,50 @@ int main()
 		switch (opcao)
 		{
 		case 1:
-			printf("Digite o nome completo, a idade e o saldo do usuário para cadastrar\n");
-			u.id = 0;
-			u.idade = 0;
-			u.saldo = 0.f;
-			scanf("%[^,], %d, %f", u.nome, &u.idade, &u.saldo);
-			AdicionarUsuario(&Uaibank, u);
 
+			do
+			{
+				isInputOK = 1;
+				printf("Digite o nome completo, a idade e o saldo do usuário para cadastrar\n");
+				u.id = 0;
+				u.idade = 0;
+				u.saldo = 0.f;
+
+				scanf("%[^,], %d, %f", u.nome, &u.idade, &u.saldo);
+
+				if (u.idade < 18)
+				{
+					printf("ERRO: Usuário %s não pode ser cadastrado, pois é menor de idade.\n", u.nome);
+					isInputOK = -1;
+				}
+
+				else if (u.saldo < 0)
+				{
+					printf("ERRO: Usuário %s não pode ser cadastrado, pois tem saldo negativo.\n", u.nome);
+					isInputOK = -1;
+				}
+
+				if (isInputOK < 0)
+				{
+					printf("\nSe deseja cadastrar um novo usuário, digite 1.\nCaso deseje voltar ao menu anterior digite 0\n");
+					scanf("%d", &subOpcao);
+
+					// Como o primeiro parâmetro para adicionar um cliente é uma string, é preciso limpar o buffer do teclado
+					// caso contrário o \n será inserido no começo do nome do usuário
+					getchar();
+					if (subOpcao == 0)
+					{
+						break;
+					}
+					printf("\n\n");
+				}
+
+				else if (isInputOK == 1)
+				{
+					index = Uaibank.size;
+					AdicionarUsuario(&Uaibank, u);
+				}
+			} while (isInputOK < 0);
 			break;
 		case 2:
 			i = 0;
@@ -242,18 +292,49 @@ int main()
 			getchar();
 			while (i < n)
 			{
-				u.id = 0;
-				u.idade = 0;
-				u.saldo = 0.f;
+				do
+				{
+					isInputOK = 1;
+					printf("Digite o nome completo, a idade e o saldo do usuário para cadastrar\n");
+					u.id = 0;
+					u.idade = 0;
+					u.saldo = 0.f;
 
-				u.id = 0;
-				scanf("%[^,], %d, %f", u.nome, &u.idade, &u.saldo);
+					scanf("%[^,], %d, %f", u.nome, &u.idade, &u.saldo);
 
-				// Como o primeiro parâmetro para adicionar um cliente é uma string, é preciso limpar o buffer do teclado
-				// caso contrário o \n será inserido no começo do nome do usuário
-				getchar();
+					if (u.idade < 18)
+					{
+						printf("ERRO: Usuário %s não pode ser cadastrado, pois é menor de idade.\n", u.nome);
+						isInputOK = -1;
+					}
 
-				AdicionarUsuario(&Uaibank, u);
+					else if (u.saldo < 0)
+					{
+						printf("ERRO: Usuário %s não pode ser cadastrado, pois tem saldo negativo.\n", u.nome);
+						isInputOK = -1;
+					}
+
+					if (isInputOK < 0)
+					{
+						printf("\nSe deseja cadastrar um novo usuário, digite 1.\nCaso deseje voltar ao menu anterior digite 0\n");
+						scanf("%d", &subOpcao);
+
+						// Como o primeiro parâmetro para adicionar um cliente é uma string, é preciso limpar o buffer do teclado
+						// caso contrário o \n será inserido no começo do nome do usuário
+						getchar();
+						if (subOpcao == 0)
+						{
+							break;
+						}
+						printf("\n\n");
+					}
+
+					else if (isInputOK == 1)
+					{
+
+						AdicionarUsuario(&Uaibank, u);
+					}
+				} while (isInputOK < 0);
 				i += 1;
 			}
 
@@ -273,9 +354,9 @@ int main()
 
 			break;
 		case 5:
-			int id_solicitante = 0;
-			int id_beneficiario = 0;
-			float quantidade = 0.0;
+			id_solicitante = 0;
+			id_beneficiario = 0;
+			quantidade = 0.0;
 			printf("Digite a ID do usuário que fará a transferência : \n");
 			scanf("%d", &id_solicitante);
 
