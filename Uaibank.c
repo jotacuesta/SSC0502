@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 
 typedef struct
 {
@@ -43,7 +42,7 @@ void MostrarUsuario(Banco *b, int id)
 
 	if (u.id != 0)
 	{
-		printf("Usuário %d tem saldo de R$ %.2f .\n", u.id, u.saldo);
+		printf("ID do Usuário: %d\nNome: %s\nIdade: %d\nSaldo: %.2f\n", u.id, u.nome, u.idade, u.saldo);
 	}
 	else
 	{
@@ -56,6 +55,7 @@ void AdicionarUsuario(Banco *b, Usuario u)
 	// Antes do cadastro a sequência de id's deve ser incrementada para garantir a unicidade
 	b->gen_id += 1;
 	u.id = b->gen_id;
+	printf("Usuário cadastrado com sucesso. ID de Usuário: %d\n", u.id);
 
 	// Para adicionar um novo usuário o sistema irá abrir o arquivo de banco de dados e adicionar o novo usuário no final do arquivo
 	// portanto a flag utilziada será ab
@@ -95,6 +95,7 @@ void DeletarUsuario(Banco *b, int id)
 
 		b->size -= 1;
 		b->clientes = (Usuario *)realloc(b->clientes, (b->size + 1) * sizeof(Usuario));
+		printf("Usuário %d excluído com sucesso.\n", id);
 
 		// Para o caso de exclusão de um usuário o sistema irá recriar o arquivo de banco de dados e adicionar todos os usuários novamente
 		// portanto a flag utilizada será wb
@@ -121,8 +122,9 @@ void Transferencia(Banco *b, int id_solicitante, int id_beneficiario, float quan
 
 	if (solicitante->saldo >= quantidade)
 	{
-		beneficiario->saldo += solicitante->saldo;
+		beneficiario->saldo += quantidade;
 		solicitante->saldo -= quantidade;
+		printf("Transferência realizada com sucesso.\n");
 
 		// Para o caso de transferencia bancário, o sistema irá recriar o arquivo de banco de dados e adicionar todos os usuários novamente
 		// portanto a flag utilizada será wb
@@ -150,6 +152,8 @@ void ExportarDados(Banco *b)
 	{
 		fprintf(file, "%d, %s, %d, %.2f\n", b->clientes[i].id, b->clientes[i].nome, b->clientes[i].idade, b->clientes[i].saldo);
 	}
+
+	printf("Dados exportados com sucesso.\n");
 
 	fclose(file);
 }
@@ -240,7 +244,7 @@ int main()
 			do
 			{
 				isInputOK = 1;
-				printf("Digite o nome completo, a idade e o saldo do usuário para cadastrar\n");
+				printf("Digite o nome completo, a idade e o saldo do usuário para cadastrar separados por vírgulas\n");
 				u.id = 0;
 				u.idade = 0;
 				u.saldo = 0.f;
@@ -378,7 +382,7 @@ int main()
 
 	} while (opcao != 0);
 
-	printf("\n\nAté logo !\n\n");
+	printf("\n\nAté logo!\n\n");
 
 	free(Uaibank.clientes);
 	return 0;
