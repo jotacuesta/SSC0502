@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
+#include <ctype.h>
 
 typedef struct
 {
@@ -19,9 +21,18 @@ typedef struct
 	int unsigned gen_id;
 } Banco;
 
+void clear_screen()
+{
+#ifdef _WIN32
+	system("cls");
+#elif __linux__
+	system("clear");
+#endif
+}
+
 int GetIndexDoUsuarioComId(Banco *b, int id)
 {
-	int i = 0;
+	unsigned int i = 0;
 	int indice = -1;
 	for (i = 0; i < (b->size - 1); i++)
 	{
@@ -42,10 +53,12 @@ void MostrarUsuario(Banco *b, int id)
 
 	if (u.id != 0)
 	{
+		clear_screen();
 		printf("ID do Usuário: %d\nNome: %s\nIdade: %d\nSaldo: %.2f\n", u.id, u.nome, u.idade, u.saldo);
 	}
 	else
 	{
+		clear_screen();
 		printf("ERRO: Usuário %d não encontrado.", id);
 	}
 }
@@ -55,6 +68,7 @@ void AdicionarUsuario(Banco *b, Usuario u)
 	// Antes do cadastro a sequência de id's deve ser incrementada para garantir a unicidade
 	b->gen_id += 1;
 	u.id = b->gen_id;
+	clear_screen();
 	printf("Usuário cadastrado com sucesso. ID de Usuário: %d\n", u.id);
 
 	// Para adicionar um novo usuário o sistema irá abrir o arquivo de banco de dados e adicionar o novo usuário no final do arquivo
@@ -81,13 +95,13 @@ void AdicionarUsuario(Banco *b, Usuario u)
 
 void DeletarUsuario(Banco *b, int id)
 {
-	int i = 0;
+	unsigned int i = 0;
 	int indice = GetIndexDoUsuarioComId(b, id);
 
 	if (indice > -1)
 	{
 
-		int j;
+		unsigned int j;
 		for (j = (indice + 1); j < (b->size - 1); j++)
 		{
 			b->clientes[j - 1] = b->clientes[j];
@@ -95,6 +109,7 @@ void DeletarUsuario(Banco *b, int id)
 
 		b->size -= 1;
 		b->clientes = (Usuario *)realloc(b->clientes, (b->size + 1) * sizeof(Usuario));
+		clear_screen();
 		printf("Usuário %d excluído com sucesso.\n", id);
 
 		// Para o caso de exclusão de um usuário o sistema irá recriar o arquivo de banco de dados e adicionar todos os usuários novamente
@@ -114,8 +129,8 @@ void DeletarUsuario(Banco *b, int id)
 
 void Transferencia(Banco *b, int id_solicitante, int id_beneficiario, float quantidade)
 {
-	int i = GetIndexDoUsuarioComId(b, id_solicitante);
-	int j = GetIndexDoUsuarioComId(b, id_beneficiario);
+	unsigned int i = GetIndexDoUsuarioComId(b, id_solicitante);
+	unsigned int j = GetIndexDoUsuarioComId(b, id_beneficiario);
 
 	Usuario *solicitante = &(b->clientes[i]);
 	Usuario *beneficiario = &(b->clientes[j]);
@@ -124,6 +139,7 @@ void Transferencia(Banco *b, int id_solicitante, int id_beneficiario, float quan
 	{
 		beneficiario->saldo += quantidade;
 		solicitante->saldo -= quantidade;
+		clear_screen();
 		printf("Transferência realizada com sucesso.\n");
 
 		// Para o caso de transferencia bancário, o sistema irá recriar o arquivo de banco de dados e adicionar todos os usuários novamente
@@ -137,6 +153,7 @@ void Transferencia(Banco *b, int id_solicitante, int id_beneficiario, float quan
 	}
 	else
 	{
+		clear_screen();
 		printf("ERRO: Usuário %d não tem saldo suficiente para transferir.\n", solicitante->id);
 	}
 }
@@ -147,12 +164,13 @@ void ExportarDados(Banco *b)
 	// a id não será mostrada ao usuário final
 	FILE *file = fopen("UAIBANK.txt", "w");
 
-	int i = 0;
+	unsigned int i = 0;
 	for (i = 0; i < (b->size - 1); i++)
 	{
 		fprintf(file, "%d, %s, %d, %.2f\n", b->clientes[i].id, b->clientes[i].nome, b->clientes[i].idade, b->clientes[i].saldo);
 	}
 
+	clear_screen();
 	printf("Dados exportados com sucesso.\n");
 
 	fclose(file);
@@ -160,7 +178,7 @@ void ExportarDados(Banco *b)
 
 int main()
 {
-
+	setlocale(LC_ALL, "Portuguese");
 	Banco Uaibank;
 
 	printf("\t\t _     _       _ _                 _     \n");
@@ -216,9 +234,6 @@ int main()
 
 	Usuario u;
 
-	char feedback[100];
-	int index = 0;
-
 	// Imprime o menu do opções para o usuário
 	do
 	{
@@ -244,6 +259,7 @@ int main()
 			do
 			{
 				isInputOK = 1;
+				clear_screen();
 				printf("Digite o nome completo, a idade e o saldo do usuário para cadastrar separados por vírgulas\n");
 				u.id = 0;
 				u.idade = 0;
@@ -253,13 +269,30 @@ int main()
 
 				if (u.idade < 18)
 				{
+					clear_screen();
 					printf("ERRO: Usuário %s não pode ser cadastrado, pois é menor de idade.\n", u.nome);
 					isInputOK = -1;
 				}
 
 				else if (u.saldo < 0)
 				{
+					clear_screen();
 					printf("ERRO: Usuário %s não pode ser cadastrado, pois tem saldo negativo.\n", u.nome);
+					isInputOK = -1;
+				}
+
+				int temp = 0;
+				temp = strlen(u.nome);
+				if (temp > 100)
+				{
+					clear_screen();
+					printf("ERRO: Usuário não pode ser cadastrado, pois tem nome com mais de 100 caracteres.\n");
+					isInputOK = -1;
+				}
+
+				if (isalpha(u.nome[0]) == 0)
+				{
+					printf("ERRO: Nome de usuário não pode conter números ou caracteres especiais.\n");
 					isInputOK = -1;
 				}
 
@@ -280,7 +313,6 @@ int main()
 
 				else if (isInputOK == 1)
 				{
-					index = Uaibank.size;
 					AdicionarUsuario(&Uaibank, u);
 				}
 			} while (isInputOK < 0);
@@ -289,6 +321,7 @@ int main()
 			i = 0;
 			n = 0;
 
+			clear_screen();
 			printf("Qual o número de usuário que serão cadastrados ? ");
 			scanf("%d", &n);
 			// Como o primeiro parâmetro para adicionar um cliente é uma string, é preciso limpar o buffer do teclado
@@ -308,12 +341,14 @@ int main()
 
 					if (u.idade < 18)
 					{
+						clear_screen();
 						printf("ERRO: Usuário %s não pode ser cadastrado, pois é menor de idade.\n", u.nome);
 						isInputOK = -1;
 					}
 
 					else if (u.saldo < 0)
 					{
+						clear_screen();
 						printf("ERRO: Usuário %s não pode ser cadastrado, pois tem saldo negativo.\n", u.nome);
 						isInputOK = -1;
 					}
@@ -345,6 +380,7 @@ int main()
 			break;
 		case 3:
 			id = 0;
+			clear_screen();
 			printf("Digite a ID do usuário que deseja consultar \n");
 			scanf("%d", &id);
 			MostrarUsuario(&Uaibank, id);
@@ -352,6 +388,7 @@ int main()
 			break;
 		case 4:
 			id = 0;
+			clear_screen();
 			printf("Digite a ID do usuário que deseja excluir \n");
 			scanf("%d", &id);
 			DeletarUsuario(&Uaibank, id);
@@ -361,6 +398,7 @@ int main()
 			id_solicitante = 0;
 			id_beneficiario = 0;
 			quantidade = 0.0;
+			clear_screen();
 			printf("Digite a ID do usuário que fará a transferência : \n");
 			scanf("%d", &id_solicitante);
 
