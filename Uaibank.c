@@ -129,9 +129,27 @@ void DeletarUsuario(Banco *b, int id)
 
 void Transferencia(Banco *b, int id_solicitante, int id_beneficiario, float quantidade)
 {
+	int temp = 0;
+	
 	unsigned int i = GetIndexDoUsuarioComId(b, id_solicitante);
+	if (i == -1) {
+	    clear_screen();
+	    printf("ERRO: Usuário remetente não encontrado. A transferência não foi realizada.\n");
+        temp = 1;
+	}
+	
 	unsigned int j = GetIndexDoUsuarioComId(b, id_beneficiario);
+	if (j == -1) {
+	    clear_screen();
+	    printf("ERRO: Usuário destinatário não encontrado. A transferência não foi realizada.\n");
+        temp = 1;
+	}
 
+    if (temp == 1)
+    {
+        return;
+    }
+    
 	Usuario *solicitante = &(b->clientes[i]);
 	Usuario *beneficiario = &(b->clientes[j]);
 
@@ -154,7 +172,7 @@ void Transferencia(Banco *b, int id_solicitante, int id_beneficiario, float quan
 	else
 	{
 		clear_screen();
-		printf("ERRO: Usuário %d não tem saldo suficiente para transferir.\n", solicitante->id);
+		printf("ERRO: Usuário %d não tem saldo suficiente para transferir.  A transferência não foi realizada.\n", solicitante->id);
 	}
 }
 
