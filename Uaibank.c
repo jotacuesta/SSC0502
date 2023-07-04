@@ -290,11 +290,15 @@ int main()
 					isInputOK = -1;
 				}
 
-				if (isalpha(u.nome[0]) == 0)
-				{
-					printf("ERRO: Nome de usuário não pode conter números ou caracteres especiais.\n");
-					isInputOK = -1;
-				}
+                for (int k = 0; k < strlen(u.nome); k++) {
+			        if (isalpha(u.nome[k]) == 0)
+			        {
+			    	    printf("ERRO: Nome de usuário não pode conter números ou caracteres especiais.\n");
+			    	    isInputOK = -1;
+			    	    break;
+			        }
+                }
+				
 
 				if (isInputOK < 0)
 				{
@@ -352,6 +356,24 @@ int main()
 						printf("ERRO: Usuário %s não pode ser cadastrado, pois tem saldo negativo.\n", u.nome);
 						isInputOK = -1;
 					}
+					
+					int temp = 0;
+			    	temp = strlen(u.nome);
+			    	if (temp > 100)
+			    	{
+				    	clear_screen();
+				    	printf("ERRO: Usuário não pode ser cadastrado, pois tem nome com mais de 100 caracteres.\n");
+				    	isInputOK = -1;
+			    	}
+
+                    for (int k = 0; k < strlen(u.nome) - 1; k++) {
+			        	if (isalpha(u.nome[k+1]) == 0)
+			        	{
+			    	    	printf("ERRO: Nome de usuário não pode conter números ou caracteres especiais.\n");
+			    	    	isInputOK = -1;
+			    	    	break;
+			        	}
+                    }
 
 					if (isInputOK < 0)
 					{
