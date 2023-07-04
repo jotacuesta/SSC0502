@@ -290,8 +290,8 @@ int main()
 					isInputOK = -1;
 				}
 
-                for (int k = 0; k < strlen(u.nome); k++) {
-			        if (isalpha(u.nome[k]) == 0)
+                for (int k = 0; k < strlen(u.nome) - 1; k++) {
+			        if (isalpha(u.nome[k]) == 0 && isspace(u.nome[k]) == 0)
 			        {
 			    	    printf("ERRO: Nome de usuário não pode conter números ou caracteres especiais.\n");
 			    	    isInputOK = -1;
@@ -367,7 +367,7 @@ int main()
 			    	}
 
                     for (int k = 0; k < strlen(u.nome) - 1; k++) {
-			        	if (isalpha(u.nome[k+1]) == 0)
+			        	if (isalpha(u.nome[k]) == 0 && isspace(u.nome[k]) == 0)
 			        	{
 			    	    	printf("ERRO: Nome de usuário não pode conter números ou caracteres especiais.\n");
 			    	    	isInputOK = -1;
