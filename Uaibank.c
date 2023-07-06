@@ -123,33 +123,16 @@ void DeletarUsuario(Banco *b, int id)
 	}
 	else
 	{
+		clear_screen();
 		printf("ERRO: Usuário %d não encontrado.\n", id);
 	}
 }
 
 void Transferencia(Banco *b, int id_solicitante, int id_beneficiario, float quantidade)
 {
-	int temp = 0;
-	
 	unsigned int i = GetIndexDoUsuarioComId(b, id_solicitante);
-	if (i == -1) {
-	    clear_screen();
-	    printf("ERRO: Usuário remetente não encontrado. A transferência não foi realizada.\n");
-        temp = 1;
-	}
-	
 	unsigned int j = GetIndexDoUsuarioComId(b, id_beneficiario);
-	if (j == -1) {
-	    clear_screen();
-	    printf("ERRO: Usuário destinatário não encontrado. A transferência não foi realizada.\n");
-        temp = 1;
-	}
 
-    if (temp == 1)
-    {
-        return;
-    }
-    
 	Usuario *solicitante = &(b->clientes[i]);
 	Usuario *beneficiario = &(b->clientes[j]);
 
@@ -172,7 +155,7 @@ void Transferencia(Banco *b, int id_solicitante, int id_beneficiario, float quan
 	else
 	{
 		clear_screen();
-		printf("ERRO: Usuário %d não tem saldo suficiente para transferir.  A transferência não foi realizada.\n", solicitante->id);
+		printf("ERRO: Usuário %d não tem saldo suficiente para transferir.\n", solicitante->id);
 	}
 }
 
@@ -311,6 +294,7 @@ int main()
                 for (int k = 0; k < strlen(u.nome) - 1; k++) {
 			        if (isalpha(u.nome[k]) == 0 && isspace(u.nome[k]) == 0)
 			        {
+			    	    clear_screen();
 			    	    printf("ERRO: Nome de usuário não pode conter números ou caracteres especiais.\n");
 			    	    isInputOK = -1;
 			    	    break;
@@ -387,6 +371,7 @@ int main()
                     for (int k = 0; k < strlen(u.nome) - 1; k++) {
 			        	if (isalpha(u.nome[k]) == 0 && isspace(u.nome[k]) == 0)
 			        	{
+			    	    	clear_screen();
 			    	    	printf("ERRO: Nome de usuário não pode conter números ou caracteres especiais.\n");
 			    	    	isInputOK = -1;
 			    	    	break;
@@ -447,7 +432,12 @@ int main()
 
 			printf("Digite a quantidade que deve ser transferida em R$: \n");
 			scanf("%f", &quantidade);
-
+            if (quantidade < 0){
+                clear_screen();
+                printf("Uaibank não permite a transferência de valores negativos");
+                break;
+            }
+            
 			Transferencia(&Uaibank, id_solicitante, id_beneficiario, quantidade);
 			break;
 		case 6:
