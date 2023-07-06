@@ -123,6 +123,7 @@ void DeletarUsuario(Banco *b, int id)
 	}
 	else
 	{
+		clear_screen();
 		printf("ERRO: Usuário %d não encontrado.\n", id);
 	}
 }
@@ -293,6 +294,7 @@ int main()
                 for (int k = 0; k < strlen(u.nome) - 1; k++) {
 			        if (isalpha(u.nome[k]) == 0 && isspace(u.nome[k]) == 0)
 			        {
+			    	    clear_screen();
 			    	    printf("ERRO: Nome de usuário não pode conter números ou caracteres especiais.\n");
 			    	    isInputOK = -1;
 			    	    break;
@@ -369,6 +371,7 @@ int main()
                     for (int k = 0; k < strlen(u.nome) - 1; k++) {
 			        	if (isalpha(u.nome[k]) == 0 && isspace(u.nome[k]) == 0)
 			        	{
+			    	    	clear_screen();
 			    	    	printf("ERRO: Nome de usuário não pode conter números ou caracteres especiais.\n");
 			    	    	isInputOK = -1;
 			    	    	break;
@@ -429,7 +432,12 @@ int main()
 
 			printf("Digite a quantidade que deve ser transferida em R$: \n");
 			scanf("%f", &quantidade);
-
+            if (quantidade < 0){
+                clear_screen();
+                printf("Uaibank não permite a transferência de valores negativos");
+                break;
+            }
+            
 			Transferencia(&Uaibank, id_solicitante, id_beneficiario, quantidade);
 			break;
 		case 6:
